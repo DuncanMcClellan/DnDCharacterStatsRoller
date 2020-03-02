@@ -1,0 +1,109 @@
+#include <iostream>
+
+int* fillStats();
+
+using namespace std;
+
+void toString(int* arr){
+  cout << "[";
+  for(int i = 0; i < 6; i++){
+    cout << *(arr + i);
+    if(i != 5){
+      cout << ", ";
+    }
+  }
+  cout << "]" << endl << endl;
+}
+
+int main() {
+  int* stats = fillStats();
+  toString(stats);
+}
+
+/* Take dice rolls
+ * Drop lowest valued roll
+ * Return sum of saved rolls
+ */
+int dropLowest(int dice[4]){
+  int lowest = 7; //a die can never have a value larger than 6
+  int index;
+  int sum = 0;
+
+  for(int i = 0; i < 4; i++){
+    if(dice[i] < lowest){
+      lowest = dice[i];
+      index = i;
+    }
+  }
+
+  for(int i = 0; i < 4; i++){
+    if(i != index){
+      sum += dice[i];
+    }
+  }
+
+  return sum;
+}
+
+void heapify(int arr[], int n, int i) 
+{ 
+    int largest = i; // Initialize largest as root 
+    int l = 2 * i + 1; // left = 2*i + 1 
+    int r = 2 * i + 2; // right = 2*i + 2 
+  
+    // If left child is larger than root 
+    if (l < n && arr[l] > arr[largest]) 
+        largest = l; 
+  
+    // If right child is larger than largest so far 
+    if (r < n && arr[r] > arr[largest]) 
+        largest = r; 
+  
+    // If largest is not root 
+    if (largest != i) { 
+        swap(arr[i], arr[largest]); 
+  
+        // Recursively heapify the affected sub-tree 
+        heapify(arr, n, largest); 
+    } 
+} 
+  
+// main function to do heap sort 
+void heapSort(int arr[], int n) 
+{ 
+    // Build heap (rearrange array) 
+    for (int i = n / 2 - 1; i >= 0; i--) 
+        heapify(arr, n, i); 
+  
+    // One by one extract an element from heap 
+    for (int i = n - 1; i >= 0; i--) { 
+        // Move current root to end 
+        swap(arr[0], arr[i]); 
+  
+        // call max heapify on the reduced heap 
+        heapify(arr, i, 0); 
+    } 
+}
+
+/* Take no input
+ * Roll 4d6 6 times
+ * Save the sums of 4d6 drop the lowest
+ * Return the sorted pointer array of calculated stats
+ */
+int* fillStats() {
+  static int stats[6];
+  int dice[4];
+
+  srand((unsigned)time(NULL));
+
+  for(int i = 0; i < 6; i++){
+    for(int j = 0; j < 4; j++){
+      dice[j] = ((rand() % 6) + 1);
+    }
+    stats[i] = dropLowest(dice);
+  }
+
+  heapSort(stats, sizeof(stats)/sizeof(stats[0]));
+
+  return stats;
+}
